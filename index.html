@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja" ng-app="TodoWithCalendar">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo with Calendar</title>
+  <link rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/underscore/underscore-min.js"></script>
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.min.js "></script>
+  <script src="bower_components/ng-pickadate/ng-pickadate.js"></script>
+  <script src="bower_components/materialize/dist/js/materialize.min.js"></script>
+  <script src="js/main.js"></script>
+</head>
+<body>
+  <div id="container">
+    <nav>
+      <div class="nav-wrapper">
+        <div class="row">
+          <div class="col s12">
+            <a href="." class="brand-logo center">Todo with Calendar</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="row">
+      <div class="col m4 s12" ng-controller="Todo" id="todos">
+        <h1>Todos</h1>
+        <div class="row">
+          <form ng-submit="submit()">
+            <div class="col s9 input-field">
+              <input type="text" name="todo" ng-model="todoText" />
+              <label for="todo">Input your task</label>
+            </div>
+            <div class="col s3 input-field">
+              <a class="btn-floating waves-effect waves-light" ng-click="submit()"><i class="material-icons">add</i></a>
+            </div>
+          </form>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <ul class="tabs">
+              <li class="tab col s4"><a href="" ng-click="show('all')" ng-class="{active: mode == 'all'}" class="active">All</a></li>
+              <li class="tab col s4"><a href="" ng-click="show('uncomplete')" ng-class="{active: mode == 'uncomplete'}">Uncomplete</a></li>
+              <li class="tab col s4"><a href="" ng-click="show('complete')" ng-class="{active: mode == 'complete'}">Complete</a></li>
+            </ul>
+          </div>
+          <div class="col s12">
+            <p ng-cloak ng-show="!todos.length">No task.</p>
+            <ul class="collection todos"  ng-cloak ng-show="filteredTodo.length > 0">
+              <li class="collection-item todos__li" ng-repeat="todo in filteredTodo = (todos | filter:taskFilter | orderBy: 'due_date')" ng-class="{'red lighten-4': (todo.due_date && date > todo.due_date)}">
+                <span class="todos__li__title">
+                  <input type="checkbox" id="task_{{$index}}" ng-model="todo.complete" ng-change="changeTodo(todo)">
+                  <label for="task_{{$index}}" ng-class="{'complete grey-text': todo.complete, 'black-text': !todo.complete}">
+                  {{todo.title}}
+                  <span class="todos__li__date grey-text" ng-show="todo.due_date">
+                    <br />
+                    Due: {{todo.due_date | date: 'yyyy/MM/dd'}}
+                  </span>
+                  </label>
+                </span>
+                <a class="secondary-content modal-trigger" href="" ng-click="showModal(todo)">
+                  <i class="material-icons">edit</i> 
+                </a>
+
+              </li>
+            </ul>
+          </div>
+          <div class="col s12 center-align">
+            <a class="waves-effect waves-light btn s12 red" ng-click="deleteCompleteTodo()"><i class="material-icons left">delete</i>Delete Complete Todo</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="todos__edit-modal" class="modal" ng-controller="TodoModal">
+        <div class="modal-content">
+          <h1>{{todo.title}}</h1>
+          <form ng-submit="submit()" id="specific-todo-form">
+            <div class="row">
+              <div class="col s4 input-field">
+                <input type="checkbox" ng-model="todo.complete" id="specific-todo" />
+                <label for="specific-todo">
+                  Complete
+                </label>
+              </div>
+              <div class="col s4">
+                <label for="due-date">Due date:</label>
+                <input type="date" id="due-date" class="datepicker" pick-a-date="todo.due_date" pick-a-date-options="{selectMonths: true, selectYears: 100, container: 'body', format: 'yyyy/mm/dd', formatSubmit: 'yyyy/mm/dd'}"/>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col s12">
+                <label for="task_name">Task:</label>
+                <input type="text" id="task_name" ng-model="todo.title" />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" form="specific-todo-form" class="modal-action modal-close waves-effect waves-green btn-flat">OK</button>
+          <a href="" class="modal-action modal-close waves-effect waves-red btn-flat" ng-click="delete()">Delete</a>
+          <a href="" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+        </div>
+      </div>
+
+      <div class="col m8 s12" ng-controller="Calendar">
+        <h1>Calendar</h1>
+        <div class="row">
+          <div class="col s3">
+            <a href="" ng-click="prev()" class="btn waves-effect waves-light"><i class="material-icons left">keyboard_arrow_left</i> Prev</a>
+          </div>
+          <div class="col s6 center-align">
+            <div class="btn-flat waves-effect waves-light">
+              <b>{{viewDate | date: 'yyyy/MM'}}</b>
+            </div>
+          </div>
+          <div class="col s3 right-align">
+            <a href="" ng-click="next()" class="btn waves-effect waves-light"><i class="material-icons right">keyboard_arrow_right</i> Next</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <table id="calendar">
+              <thead>
+                <tr>
+                  <th>Sun</th>
+                  <th>Mon</th>
+                  <th>Tue</th>
+                  <th>Wed</th>
+                  <th>Thu</th>
+                  <th>Fri</th>
+                  <th>Sat</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="week in weeks">
+                  <td ng-repeat="day in week" ng-class="{'grey lighten-3': today.getTime() == day.full.getTime()}">
+                  <a href="">
+                    <div>
+                      {{day.date}}
+                    </div>
+                    <ul ng-show="day.tasks.length > 0" class="calendar__task-list">
+                      <li ng-repeat="todo in day.tasks">
+                        <a href="" ng-click="showModal(todo)" ng-class="{'grey-text complete': todo.complete}">{{todo.title}}</a>
+                      </li>
+                    </ul>
+                  </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "13",
+  "version": "0.0.0",
+  "authors": [
+    "sunya <mugen.Xyz@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.3",
+    "materialize": "~0.97.0",
+    "jquery": "~2.1.4",
+    "ng-pickadate": "~0.2.1",
+    "underscore": "~1.8.3",
+    "angular-resource": "~1.4.3"
+  }
+}

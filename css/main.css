@@ -1,0 +1,17 @@
+.complete{
+	text-decoration: line-through;
+}
+#calendar{
+	table-layout: fixed;
+}
+#calendar th{
+	width: 14.28%;
+}
+#calendar td{
+	vertical-align: baseline;
+}
+.calendar__task-list li{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
