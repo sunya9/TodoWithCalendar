@@ -28,12 +28,11 @@ myApp.controller('Todo', ['$scope', 'global', 'TodoModel', function($scope, glob
   $scope.todo = global.todo;
 
   var todos = TodoModel.query(function(){
-    for(var i = 0; todos.length > i; i++){
-      var todo = todos[i];
+    _.each(todos, function(todo){
       if(todo.due_date) todo.due_date = new Date(todo.due_date).getTime();
       if(todo.create_date) todo.create_date = new Date(todo.create_date).getTime();
-      $scope.todos.push(todos[i]);
-    }
+      $scope.todos.push(todo);
+    });
   });
 
   $scope.deleteCompleteTodo = function(){
